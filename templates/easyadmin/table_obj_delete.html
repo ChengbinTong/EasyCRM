@@ -1,0 +1,13 @@
+{% extends "easyadmin/base.html" %}
+{% load tags %}
+{%  block main %}
+    {{ errors }}
+    {% display_obj_related objs  %}
+    <form method="post">{% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="Yes,I'm sure">
+        <input type="hidden" value="yes" name="delete_confirm">
+        <input type="hidden" value="{{ action_pks }}" name="action_pks">
+        <input type="hidden" value="{{ action_def }}" name="action_def">
+        <a class="btn btn-info" href="{% url 'table_objs' app_name table_name  %}">No,Take me back</a>
+    </form>
+{% endblock %}

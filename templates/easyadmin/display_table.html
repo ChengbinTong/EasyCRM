@@ -1,0 +1,100 @@
+{% extends "easyadmin/base.html" %}
+{% load tags %}
+<body>
+{% block main %}
+    <div class="row">
+    <main class="container">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <a>{% render_table_name admin_class %}</a>
+                    <a href="{{ request.path }}/add/" class=" pull-right">Add</a>
+                </h3>
+            </div>
+            <div class="panel-body">
+            {% if admin_class.list_filters %}
+                <form class="" method="get">
+                    <div class="row">
+                        {% for condtion in admin_class.list_filters %}
+                            <div class="col-lg-2">
+                                {% render_filter_ele condtion admin_class filter_condtions %}
+                            </div>
+                        {% endfor %}
+                        <button type="SUBMIT" class="btn btn-success">检索</button>
+                    </div>
+                <hr>
+                    <div title="搜索范围：{% for colum in admin_class.list_search  %}{{ colum }}  {% endfor %}" class="row">
+                        <div class="col-lg-3"><input type="search" value="{{ search_text }}" name="_q" class="form-control"/></div>
+                        <button type="SUBMIT"  class="btn btn-success">搜索</button>
+                    </div>
+                </form>
+                <hr>
+            {% endif %}
+            <form class="" method="post">{% csrf_token %}
+                 <div class="row">
+                     <div class="col-lg-3">
+                     <input class="hidden" name="action_pks" id="action_pks" value="">
+                         <select id="action_list" name="action_def" class="form-control" name="action">
+                             <option value="">action</option>
+                             {% for action in admin_class.actions %}<option value={{ action }}>{{ action }}</option>{% endfor %}
+                         </select>
+                     </div>
+                     <button class="btn btn-success" onclick="return ActionSubmit(this)">GO</button>
+                 </div>
+            </form>
+                <table class="table">
+                    <thead>
+                    <tr><td><input type="checkbox" onclick="CheckAllToggle(this)"></td>
+                    {% for obj in admin_class.list_display %}
+                        <td><a href={% render_order_url filter_condtions order_rule obj %}><span>{{ obj }}</span></a></td>
+                    {% endfor %}
+                    </tr>
+                    </thead>
+                 <tbody>
+                    {% for obj in object_list %}
+                    <tr>
+                        <td><input tag="obj_checkbox" type="checkbox" value={{ obj.pk }}></td>{% build_table_row request obj admin_class %}
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            <div>共计{{ object_list.paginator.count }}记录</div>
+            <nav class="page pagination">
+                     <ul class="pagination">
+                         {% easypaginator request object_list %}
+                     </ul>
+                </nav>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+{% block js %}
+    <script>
+        function CheckAllToggle(ele){
+            if ( $(ele).prop("checked")){
+                $("input[tag='obj_checkbox']").prop("checked",true);
+            }else {
+                $("input[tag='obj_checkbox']").prop("checked",false);
+            }
+        }
+        function ActionSubmit(form_ele) {
+           var selected_pks = [];
+           var selected_action = $("#action_list").val();
+           $("input[tag='obj_checkbox']:checked").each(function () {
+               selected_pks.push($(this).val());
+           });
+           if (selected_pks.length == 0){
+               alert("No object got selected!");
+               return false
+           }
+           if (selected_action.length==0 ){
+               alert("No action got selected!");
+               return false
+           }
+          $("#action_pks").val(selected_pks.toString());
+           return true
+        }
+
+    </script>
+{% endblock %}

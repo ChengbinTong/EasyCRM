@@ -1,0 +1,9 @@
+<aside class="col-xs-2 sidebar">
+            <div class="list-group ">
+                {% for role in request.user.userprofile.roles.all %}
+                    {% for meun in role.menus.all %}
+                        <a class="list-group-item" href={% url 'menus_url' meun.name %} >{{ meun }}</a>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+</aside>

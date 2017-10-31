@@ -1,0 +1,32 @@
+{% extends "easyadmin/head_template.html" %}
+{% load tags %}
+{% block content %}
+    <div class="container">
+    {{ form_obj.errors }}
+    <form class="form-horizontal" role="form" method="post">{% csrf_token %}
+    {{ form_obj.errors }}
+        {% for field in   form_obj %}
+        <div class="form-group">
+
+            {% if  field.field.required %}
+                <label  class="col-sm-2 control-label" style="font-weight: normal"><strong>{{ field.label }}</strong></label>
+            {% else %}
+                <label  class="col-sm-2 control-label" style="font-weight: normal">{{ field.label }} </label>
+            {% endif %}
+            {{ field }}{{ field.help_text }}
+            <span style="color: red">{{ field.errors }}</span>
+        </div>
+        {% endfor %}
+        {%  if not  admin_class.readonly_table %}
+            <div class="form-group">
+            <div class="col-sm-10 ">
+                {% if obj_pk %}
+                    <a class="bottom btn btn-danger" href={% url "obj_delete" app_name table_name obj_pk %}>删除</a>
+                {% endif %}
+                <button type="submit" class="btn btn-success pull-right">Save</button>
+            </div>
+        </div>
+        {% endif %}
+    </form>
+    </div>
+{% endblock %}
